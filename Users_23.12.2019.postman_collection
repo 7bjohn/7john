@@ -1,0 +1,3144 @@
+{
+	"info": {
+		"_postman_id": "9da0d584-43e6-43b0-9bae-cd4f24e5e7d7",
+		"name": "Users Copy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "signup",
+			"item": [
+				{
+					"name": "Signup POSITIVE TEST",
+					"item": [
+						{
+							"name": "signup",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9628856b-d6fe-4f0a-a063-ecffddc0a333",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"email_confirmation_required should be true and succes == true\", function(){\r",
+											"       var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.email_confirmation_required).to.eql(true);\r",
+											"    pm.expect(jsonData.success).to.eql(true);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response time is less than 2000ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d694a459-4602-4268-96d2-3041eb217535",
+										"exec": [
+											"var random_namber =  Math.floor(Math.random() * 9999999999);\r",
+											"pm.collectionVariables.set(\"random_number\", random_namber)\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\",\r\n  \"password\": \"{{random_number}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/signup",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"signup"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Signup NEGATIVE TEST",
+					"item": [
+						{
+							"name": "signup same user that we allredy have",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "10c55ae5-211a-4f57-8640-f03c52bbf562",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.test(\"Status code is 400 Email  is already in use\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"verify respose contain fields error_code, success, massage\", function () {",
+											"    pm.expect(jsonData).to.have.property(\"error_code\");",
+											"    pm.expect(jsonData).to.have.property(\"success\");",
+											"    pm.expect(jsonData).to.have.property(\"message\");",
+											"});",
+											"",
+											"pm.test( \"field error_code shuld be GMSRV-0010\", function () {",
+											"    pm.expect(jsonData.error_code).to.eql(\"GMSRV-0010\");",
+											"});",
+											"",
+											"pm.test( \"field success should be false\", function () {",
+											"    pm.expect(jsonData.success).to.eql(false);",
+											"});",
+											"",
+											"pm.test( \"field message should be Email \"+pm.environment.get(\"registered_user_login\")+\"  is already in use\", function () {",
+											"    pm.expect(jsonData.message).to.eql(\"Email '\"+pm.environment.get(\"registered_user_login\")+\"' is already in use\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"{{registered_user_login}}\",\r\n  \"password\": \"{{stable_login_password}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/signup",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"signup"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "login",
+					"item": [
+						{
+							"name": "Login POSITIVE TEST",
+							"item": [
+								{
+									"name": "Login",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "e1b90300-60bc-40a4-b560-ee941c888804",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"id": "806ae704-cc54-4140-9528-437d93bb1d1c",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"pm.test(\"verify response code should be equal 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"verify respose contain fields username,role,token, success\", function () {",
+													"    pm.expect(jsonData).to.have.property(\"username\");",
+													"    pm.expect(jsonData).to.have.property(\"role\");",
+													"    pm.expect(jsonData).to.have.property(\"token\");",
+													"    pm.expect(jsonData).to.have.property(\"success\");",
+													"});",
+													"",
+													"pm.test( \"field role shuld be Client\", function () {",
+													"    pm.expect(jsonData.role).to.eql(\"Client\");",
+													"});",
+													"",
+													"pm.test(\"field success shuld be true\", function () {",
+													"    pm.expect(jsonData.success).to.eql(true);",
+													"});",
+													"",
+													"pm.collectionVariables.set(\"token\", jsonData.token) "
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"login\": \"{{registered_user_login}}\",\r\n  \"password\": \"{{registered_user_password}}\"\r\n}"
+										},
+										"url": {
+											"raw": "{{base_url}}/login?",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"login"
+											],
+											"query": [
+												{
+													"key": "",
+													"value": "",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Login NEGATIVE TEST",
+							"item": [
+								{
+									"name": "Login",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "657008c4-f3a5-4e6a-9105-d249e09ef684",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"pm.test(\"Status code is 400 login incorect\", function () {",
+													"    pm.response.to.have.status(400);",
+													"});",
+													"",
+													"pm.test(\"verify respose contain fields error_code, success, massage\", function () {",
+													"    pm.expect(jsonData).to.have.property(\"error_code\");",
+													"    pm.expect(jsonData).to.have.property(\"success\");",
+													"    pm.expect(jsonData).to.have.property(\"message\");",
+													"});",
+													"",
+													"pm.test( \"field error_code shuld be GMSRV-0050\", function () {",
+													"    pm.expect(jsonData.error_code).to.eql(\"GMSRV-0050\");",
+													"});",
+													"",
+													"pm.test( \"field success shuld be false\", function () {",
+													"    pm.expect(jsonData.success).to.eql(false);",
+													"});",
+													"",
+													"pm.test( \"field message shuld be User not found\", function () {",
+													"    pm.expect(jsonData.message).to.eql(\"User not found\");",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"login\": \"NOT_REGISTER_USERNAME@gmail.com\",\r\n  \"password\": \"not valid password\"\r\n}"
+										},
+										"url": {
+											"raw": "https://api-beta.gross-meister.com/login",
+											"protocol": "https",
+											"host": [
+												"api-beta",
+												"gross-meister",
+												"com"
+											],
+											"path": [
+												"login"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "profile POST/GET",
+			"item": [
+				{
+					"name": "profile POSITIVE TEST",
+					"item": [
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9cb037b6-e831-4c44-90c7-02ac4711ebfb",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.test(\"verify response code should be equal 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"verify respose contain fields username,role,token, success\", function () {",
+											"    pm.expect(jsonData).to.have.property(\"username\");",
+											"    pm.expect(jsonData).to.have.property(\"role\");",
+											"    pm.expect(jsonData).to.have.property(\"token\");",
+											"    pm.expect(jsonData).to.have.property(\"success\");",
+											"});",
+											"",
+											"pm.test( \"field role shuld be Client\", function () {",
+											"    pm.expect(jsonData.role).to.eql(\"Client\");",
+											"});",
+											"",
+											"pm.test(\"field success shuld be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"});",
+											"",
+											"pm.collectionVariables.set(\"token\", jsonData.token) "
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "2fec9c45-ad4e-44a4-96ec-73f9fd3683ce",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"login\": \"{{registered_user_login}}\",\r\n  \"password\": \"{{registered_user_password}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/login?",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "profile",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "87a9675c-00e8-45cf-be8e-c4b46c7f05df",
+										"exec": [
+											" var jsonData = pm.response.json();",
+											" ",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"field success shuld be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"});",
+											"",
+											"pm.test(\"field message shuld be Profile successfully updated\", function () {",
+											"    pm.expect(jsonData.message).to.eql(\"Profile successfully updated\");",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"first_name\": \"{{first_name}}\",\r\n  \"last_name\": \"{{last_name}}\",\r\n  \"username\": \"{{username}}\",\r\n  \"country\": \"{{country}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/profile",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "profile GET",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "7bf25915-a8eb-4c29-a5af-101439397195",
+										"exec": [
+											" var jsonData = pm.response.json();",
+											" ",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											" ",
+											"  pm.test( \"field username should be \" + pm.collectionVariables.get(\"username\"), function () {",
+											"    pm.expect(jsonData.username).to.eql(pm.collectionVariables.get(\"username\"));",
+											"});",
+											"",
+											" pm.test( \"field email should be \" + pm.environment.get(\"registered_user_login\"), function () {",
+											"    pm.expect(jsonData.email).to.eql(pm.environment.get(\"registered_user_login\"));",
+											"});",
+											"",
+											"pm.test( \"field role should be client\", function () {",
+											"    pm.expect(jsonData.role).to.eql(\"Client\");",
+											"}); ",
+											"",
+											"pm.test( \"field first_name should be \" + pm.collectionVariables.get(\"first_name\") , function () {",
+											"    pm.expect(jsonData.profile.first_name).to.eql(pm.collectionVariables.get(\"first_name\"));",
+											"});",
+											"",
+											"pm.test( \"field last_name should be \" + pm.collectionVariables.get(\"last_name\"), function () {",
+											"    pm.expect(jsonData.profile.last_name).to.eql(pm.collectionVariables.get(\"last_name\"));",
+											"});",
+											"",
+											" pm.test( \"field country should be \" + pm.collectionVariables.get(\"country\"), function () {",
+											"    pm.expect(jsonData.profile.country).to.eql(pm.collectionVariables.get(\"country\"));",
+											"});",
+											"",
+											"pm.test( \"field success should be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"});",
+											"",
+											" pm.test(\"verify respose contain fields profile, api_key, massage \", function () {",
+											"    pm.expect(jsonData).to.have.property(\"message\");",
+											"    pm.expect(jsonData).to.have.property(\"api_key\");",
+											"    ",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/profile",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "profile NEGATIVE TEST",
+					"item": [
+						{
+							"name": "profile",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "b3a7fc4e-bb15-4d5d-aa26-d2d972e88bb7",
+										"exec": [
+											"pm.test(\"verify response code should be equal 401 INVALID TOKEN\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"",
+											"",
+											"pm.test(\"Body is EMPTY\", function () {",
+											"    pm.response.to.have.body(\"\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "INVALID_TOKEN",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"first_name\": \"Dmytro\",\r\n  \"last_name\": \"Dolyniak\",\r\n  \"username\": \"Dolyniak\",\r\n  \"country\": \"Ukraine\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/profile",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "938e5abf-0bb3-40e4-879b-8c777ebad0f5",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "77cff1db-bea1-4f0e-99d4-7a9a540e673e",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "confirm email",
+			"item": [
+				{
+					"name": "confirm email postive test by Admin",
+					"item": [
+						{
+							"name": "signup",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "3a2827dc-f808-4d44-8251-cab9454e4215",
+										"exec": [
+											"var random_namber =  Math.floor(Math.random() * 9999999999);\r",
+											"pm.collectionVariables.set(\"random_number\", random_namber)\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "5ebae125-4020-48d5-83cc-7a09f42142c2",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"email_confirmation_required should be true and succes == true\", function(){\r",
+											"       var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.email_confirmation_required).to.eql(true);\r",
+											"    pm.expect(jsonData.success).to.eql(true);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response time is more than 2000ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\",\r\n  \"password\": \"{{random_number}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/signup",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"signup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "login Admin",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e1b90300-60bc-40a4-b560-ee941c888804",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "806ae704-cc54-4140-9528-437d93bb1d1c",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.test(\"verify response code should be equal 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"verify respose contain fields username,role,token, success\", function () {",
+											"    pm.expect(jsonData).to.have.property(\"username\");",
+											"    pm.expect(jsonData).to.have.property(\"role\");",
+											"    pm.expect(jsonData).to.have.property(\"token\");",
+											"    pm.expect(jsonData).to.have.property(\"success\");",
+											"});",
+											"   // pm.test( \"field username shuld be \"+pm.environment.get(\"stable_username\"), function () {",
+											"  //     pm.expect(jsonData.username).to.eql(pm.environment.get(\"stable_username\"));",
+											"// });                                                                                                           PROFILE",
+											"",
+											"pm.test( \"field role shuld be Admin\", function () {",
+											"    pm.expect(jsonData.role).to.eql(\"Admin\");",
+											"});",
+											"",
+											"pm.test(\"field success shuld be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"});",
+											"",
+											"pm.collectionVariables.set(\"token\", jsonData.token) "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"login\": \"{{admin_login}}\",\r\n  \"password\": \"{{admin_password}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Admin find user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e1b90300-60bc-40a4-b560-ee941c888804",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "806ae704-cc54-4140-9528-437d93bb1d1c",
+										"exec": [
+											"var UserID = pm.response.json().user.id;",
+											"pm.environment.set(\"user_id\", UserID);",
+											"",
+											"",
+											"// pm.test(\"verify response code should be equal 200\", function () {",
+											"//     pm.response.to.have.status(200);",
+											"// });",
+											"",
+											"",
+											"// pm.test(\"verify respose contain fields username,role,token, success\", function () {",
+											"//     pm.expect(jsonData).to.have.property(\"username\");",
+											"//     pm.expect(jsonData).to.have.property(\"role\");",
+											"//     pm.expect(jsonData).to.have.property(\"token\");",
+											"//     pm.expect(jsonData).to.have.property(\"success\");",
+											"// });",
+											"//   // pm.test( \"field username shuld be \"+pm.environment.get(\"stable_username\"), function () {",
+											"//   //     pm.expect(jsonData.username).to.eql(pm.environment.get(\"stable_username\"));",
+											"// // });                                                                                                           PROFILE",
+											"",
+											"// pm.test( \"field role shuld be Client\", function () {",
+											"//     pm.expect(jsonData.role).to.eql(\"Client\");",
+											"// });",
+											"",
+											"// pm.test(\"field success shuld be true\", function () {",
+											"//     pm.expect(jsonData.success).to.eql(true);",
+											"// });",
+											"",
+											"// pm.environment.set(\"token\", jsonData.token) "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/users/im-lucky/{{registered_email_username}}+{{random_number}}{{registered_email_domain}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"admin",
+										"users",
+										"im-lucky",
+										"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "confirm email by Admin",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user\": {\n        \"id\": \"{{user_id}}\",\n        \"username\": null,\n        \"email\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\",\n        \"role\": 100,\n        \"category\": 100,\n        \"active\": true,\n        \"email_confirmed\": true\n    }\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/user",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"admin",
+										"user"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "login User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e1b90300-60bc-40a4-b560-ee941c888804",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "806ae704-cc54-4140-9528-437d93bb1d1c",
+										"exec": [
+											"      ",
+											"      ",
+											"      var jsonData = pm.response.json();",
+											"pm.test(\"verify response code should be equal 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"verify respose contain fields username,role,token, success\", function () {",
+											"    pm.expect(jsonData).to.have.property(\"username\");",
+											"    pm.expect(jsonData).to.have.property(\"role\");",
+											"    pm.expect(jsonData).to.have.property(\"token\");",
+											"    pm.expect(jsonData).to.have.property(\"success\");",
+											"});",
+											"   // pm.test( \"field username shuld be \"+pm.environment.get(\"stable_username\"), function () {",
+											"  //     pm.expect(jsonData.username).to.eql(pm.environment.get(\"stable_username\"));",
+											"// });                                                                                                           PROFILE",
+											"",
+											"pm.test( \"field role shuld be Client\", function () {",
+											"    pm.expect(jsonData.role).to.eql(\"Client\");",
+											"});",
+											"",
+											"pm.test(\"field success shuld be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"});",
+											"",
+											"pm.collectionVariables.set(\"token\", jsonData.token) "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"login\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\",\r\n  \"password\": \"{{random_number}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/login?",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "TODO: confirm emeil from email box",
+					"item": [
+						{
+							"name": "confirm email from email inbox",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://api-beta.gross-meister.com/",
+									"protocol": "https",
+									"host": [
+										"api-beta",
+										"gross-meister",
+										"com"
+									],
+									"path": [
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "confirm email NEGATIVE TEST",
+					"item": [
+						{
+							"name": "signup",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "3a2827dc-f808-4d44-8251-cab9454e4215",
+										"exec": [
+											"var random_namber =  Math.floor(Math.random() * 9999999999);\r",
+											"pm.collectionVariables.set(\"random_number\", random_namber)\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "5ebae125-4020-48d5-83cc-7a09f42142c2",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"email_confirmation_required should be true and succes == true\", function(){\r",
+											"       var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.email_confirmation_required).to.eql(true);\r",
+											"    pm.expect(jsonData.success).to.eql(true);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response time is more than 2000ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\",\r\n  \"password\": \"{{random_number}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/signup",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"signup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "login not confirmed email",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e1b90300-60bc-40a4-b560-ee941c888804",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "806ae704-cc54-4140-9528-437d93bb1d1c",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.test(\"verify response code should be equal 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"verify respose contain fields error_code, success, message\", function () {",
+											"    pm.expect(jsonData).to.have.property(\"error_code\");",
+											"    pm.expect(jsonData).to.have.property(\"success\");",
+											"    pm.expect(jsonData).to.have.property(\"message\");",
+											"   ",
+											"});",
+											"   // pm.test( \"field username shuld be \"+pm.environment.get(\"stable_username\"), function () {",
+											"  //     pm.expect(jsonData.username).to.eql(pm.environment.get(\"stable_username\"));",
+											"// });                                                                                                           PROFILE",
+											"",
+											"pm.test( \"field error_code should be GMSRV-0010\", function () {",
+											"    pm.expect(jsonData.error_code).to.eql(\"GMSRV-0010\");",
+											"});",
+											"",
+											"pm.test(\"field success should be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(false);",
+											"});",
+											"    ",
+											"    ",
+											"pm.test(\"field message should be Email not confirmed\", function () {",
+											"    pm.expect(jsonData.message).to.eql(\"Email not confirmed\");",
+											"    ",
+											"    ",
+											"});",
+											"",
+											"pm.collectionVariables.set(\"token\", jsonData.token) "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"login\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\",\r\n  \"password\": \"{{random_number}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/login?",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "reset-password",
+			"item": [
+				{
+					"name": "reset password positive",
+					"item": [
+						{
+							"name": "signup",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "3a2827dc-f808-4d44-8251-cab9454e4215",
+										"exec": [
+											"var random_namber =  Math.floor(Math.random() * 9999999999);\r",
+											"pm.collectionVariables.set(\"random_number\", random_namber)\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "5ebae125-4020-48d5-83cc-7a09f42142c2",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"email_confirmation_required should be true and succes == true\", function(){\r",
+											"       var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.email_confirmation_required).to.eql(true);\r",
+											"    pm.expect(jsonData.success).to.eql(true);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response time is more than 2000ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\",\r\n  \"password\": \"{{random_number}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/signup",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"signup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "login Admin",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e1b90300-60bc-40a4-b560-ee941c888804",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "806ae704-cc54-4140-9528-437d93bb1d1c",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.test(\"verify response code should be equal 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"verify respose contain fields username,role,token, success\", function () {",
+											"    pm.expect(jsonData).to.have.property(\"username\");",
+											"    pm.expect(jsonData).to.have.property(\"role\");",
+											"    pm.expect(jsonData).to.have.property(\"token\");",
+											"    pm.expect(jsonData).to.have.property(\"success\");",
+											"});",
+											"   // pm.test( \"field username shuld be \"+pm.environment.get(\"stable_username\"), function () {",
+											"  //     pm.expect(jsonData.username).to.eql(pm.environment.get(\"stable_username\"));",
+											"// });                                                                                                           PROFILE",
+											"",
+											"pm.test( \"field role shuld be Admin\", function () {",
+											"    pm.expect(jsonData.role).to.eql(\"Admin\");",
+											"});",
+											"",
+											"pm.test(\"field success shuld be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"});",
+											"",
+											"pm.collectionVariables.set(\"token\", jsonData.token) "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"login\": \"{{admin_login}}\",\r\n  \"password\": \"{{admin_password}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/login?",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Admin find user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e1b90300-60bc-40a4-b560-ee941c888804",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "806ae704-cc54-4140-9528-437d93bb1d1c",
+										"exec": [
+											"var UserID = pm.response.json().user.id;",
+											"pm.environment.set(\"user_id\", UserID);",
+											"",
+											"",
+											"// pm.test(\"verify response code should be equal 200\", function () {",
+											"//     pm.response.to.have.status(200);",
+											"// });",
+											"",
+											"",
+											"// pm.test(\"verify respose contain fields username,role,token, success\", function () {",
+											"//     pm.expect(jsonData).to.have.property(\"username\");",
+											"//     pm.expect(jsonData).to.have.property(\"role\");",
+											"//     pm.expect(jsonData).to.have.property(\"token\");",
+											"//     pm.expect(jsonData).to.have.property(\"success\");",
+											"// });",
+											"//   // pm.test( \"field username shuld be \"+pm.environment.get(\"stable_username\"), function () {",
+											"//   //     pm.expect(jsonData.username).to.eql(pm.environment.get(\"stable_username\"));",
+											"// // });                                                                                                           PROFILE",
+											"",
+											"// pm.test( \"field role shuld be Client\", function () {",
+											"//     pm.expect(jsonData.role).to.eql(\"Client\");",
+											"// });",
+											"",
+											"// pm.test(\"field success shuld be true\", function () {",
+											"//     pm.expect(jsonData.success).to.eql(true);",
+											"// });",
+											"",
+											"// pm.environment.set(\"token\", jsonData.token) "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/users/im-lucky/{{registered_email_username}}+{{random_number}}{{registered_email_domain}}?",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"admin",
+										"users",
+										"im-lucky",
+										"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "confirm email by Admin",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user\": {\n        \"id\": \"{{user_id}}\",\n        \"username\": null,\n        \"email\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\",\n        \"role\": 100,\n        \"category\": 100,\n        \"active\": true,\n        \"email_confirmed\": true\n    }\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/user",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"admin",
+										"user"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "login User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e1b90300-60bc-40a4-b560-ee941c888804",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "806ae704-cc54-4140-9528-437d93bb1d1c",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"pm.test(\"verify response code should be equal 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"verify respose contain fields username,role,token, success\", function () {",
+											"    pm.expect(jsonData).to.have.property(\"username\");",
+											"    pm.expect(jsonData).to.have.property(\"role\");",
+											"    pm.expect(jsonData).to.have.property(\"token\");",
+											"    pm.expect(jsonData).to.have.property(\"success\");",
+											"});",
+											"",
+											"pm.test( \"field role shuld be Client\", function () {",
+											"    pm.expect(jsonData.role).to.eql(\"Client\");",
+											"});",
+											"",
+											"pm.test(\"field success shuld be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"});",
+											"",
+											"pm.collectionVariables.set(\"token\", jsonData.token) "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"login\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\",\r\n  \"password\": \"{{random_number}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/login?",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "reset-password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0a7b7914-5a8d-416e-bf76-f3e23e07aaed",
+										"exec": [
+											"pm.test(\"verify response code should be equal 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test( \"field success shuld be Client\", function () {",
+											"    pm.expect(pm.response.json().success).to.eql(true);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\"\r\n}"
+								},
+								"url": {
+									"raw": "https://api-beta.gross-meister.com/reset-password",
+									"protocol": "https",
+									"host": [
+										"api-beta",
+										"gross-meister",
+										"com"
+									],
+									"path": [
+										"reset-password"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5baaf87f-45c3-4354-bc2d-2d2f75afdc6e",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "3f9d318c-bdb1-4802-b30b-c8a730b293c5",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "confirm reset-password",
+			"item": [
+				{
+					"name": "confirm reset-password positive test",
+					"item": [
+						{
+							"name": "signup",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "3a2827dc-f808-4d44-8251-cab9454e4215",
+										"exec": [
+											"var random_namber =  Math.floor(Math.random() * 9999999999);\r",
+											"pm.collectionVariables.set(\"random_number\", random_namber)\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "5ebae125-4020-48d5-83cc-7a09f42142c2",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"email_confirmation_required should be true and succes == true\", function(){\r",
+											"       var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.email_confirmation_required).to.eql(true);\r",
+											"    pm.expect(jsonData.success).to.eql(true);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response time is more than 2000ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\",\r\n  \"password\": \"{{random_number}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/signup",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"signup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "login Admin",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e1b90300-60bc-40a4-b560-ee941c888804",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "806ae704-cc54-4140-9528-437d93bb1d1c",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.test(\"verify response code should be equal 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"verify respose contain fields username,role,token, success\", function () {",
+											"    pm.expect(jsonData).to.have.property(\"username\");",
+											"    pm.expect(jsonData).to.have.property(\"role\");",
+											"    pm.expect(jsonData).to.have.property(\"token\");",
+											"    pm.expect(jsonData).to.have.property(\"success\");",
+											"});",
+											"   // pm.test( \"field username shuld be \"+pm.environment.get(\"stable_username\"), function () {",
+											"  //     pm.expect(jsonData.username).to.eql(pm.environment.get(\"stable_username\"));",
+											"// });                                                                                                           PROFILE",
+											"",
+											"pm.test( \"field role shuld be Admin\", function () {",
+											"    pm.expect(jsonData.role).to.eql(\"Admin\");",
+											"});",
+											"",
+											"pm.test(\"field success shuld be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"});",
+											"",
+											"pm.collectionVariables.set(\"token\", jsonData.token) "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"login\": \"{{admin_login}}\",\r\n  \"password\": \"{{admin_password}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/login?",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Admin find user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e1b90300-60bc-40a4-b560-ee941c888804",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "806ae704-cc54-4140-9528-437d93bb1d1c",
+										"exec": [
+											"var UserID = pm.response.json().user.id;",
+											"pm.environment.set(\"user_id\", UserID);",
+											"",
+											"",
+											"// pm.test(\"verify response code should be equal 200\", function () {",
+											"//     pm.response.to.have.status(200);",
+											"// });",
+											"",
+											"",
+											"// pm.test(\"verify respose contain fields username,role,token, success\", function () {",
+											"//     pm.expect(jsonData).to.have.property(\"username\");",
+											"//     pm.expect(jsonData).to.have.property(\"role\");",
+											"//     pm.expect(jsonData).to.have.property(\"token\");",
+											"//     pm.expect(jsonData).to.have.property(\"success\");",
+											"// });",
+											"//   // pm.test( \"field username shuld be \"+pm.environment.get(\"stable_username\"), function () {",
+											"//   //     pm.expect(jsonData.username).to.eql(pm.environment.get(\"stable_username\"));",
+											"// // });                                                                                                           PROFILE",
+											"",
+											"// pm.test( \"field role shuld be Client\", function () {",
+											"//     pm.expect(jsonData.role).to.eql(\"Client\");",
+											"// });",
+											"",
+											"// pm.test(\"field success shuld be true\", function () {",
+											"//     pm.expect(jsonData.success).to.eql(true);",
+											"// });",
+											"",
+											"// pm.environment.set(\"token\", jsonData.token) "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/users/im-lucky/{{registered_email_username}}+{{random_number}}{{registered_email_domain}}?",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"admin",
+										"users",
+										"im-lucky",
+										"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "confirm email by Admin",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user\": {\n        \"id\": \"{{user_id}}\",\n        \"username\": null,\n        \"email\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\",\n        \"role\": 100,\n        \"category\": 100,\n        \"active\": true,\n        \"email_confirmed\": true\n    }\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/user",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"admin",
+										"user"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "login User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e1b90300-60bc-40a4-b560-ee941c888804",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "806ae704-cc54-4140-9528-437d93bb1d1c",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"pm.test(\"verify response code should be equal 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"verify respose contain fields username,role,token, success\", function () {",
+											"    pm.expect(jsonData).to.have.property(\"username\");",
+											"    pm.expect(jsonData).to.have.property(\"role\");",
+											"    pm.expect(jsonData).to.have.property(\"token\");",
+											"    pm.expect(jsonData).to.have.property(\"success\");",
+											"});",
+											"",
+											"pm.test( \"field role shuld be Client\", function () {",
+											"    pm.expect(jsonData.role).to.eql(\"Client\");",
+											"});",
+											"",
+											"pm.test(\"field success shuld be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"});",
+											"",
+											"pm.collectionVariables.set(\"token\", jsonData.token) "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"login\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\",\r\n  \"password\": \"{{random_number}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/login?",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "reset-password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0a7b7914-5a8d-416e-bf76-f3e23e07aaed",
+										"exec": [
+											"pm.test(\"verify response code should be equal 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test( \"field success shuld be Client\", function () {",
+											"    pm.expect(pm.response.json().success).to.eql(true);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\"\r\n}"
+								},
+								"url": {
+									"raw": "https://api-beta.gross-meister.com/reset-password",
+									"protocol": "https",
+									"host": [
+										"api-beta",
+										"gross-meister",
+										"com"
+									],
+									"path": [
+										"reset-password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "confirm-reset-password",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"user_id\": \"{user_id}\",\r\n  \"code\": \"string\",\r\n  \"password\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/confirm-reset-password",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"confirm-reset-password"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5baaf87f-45c3-4354-bc2d-2d2f75afdc6e",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "3f9d318c-bdb1-4802-b30b-c8a730b293c5",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "0263f224-e241-4033-be61-54e494a48c02",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "8181636b-c09b-49f2-b655-c9b5be69c27f",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "check-email/{email}",
+			"item": [
+				{
+					"name": "chek-email/{email} positive test",
+					"item": [
+						{
+							"name": "check-email/{email}",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d1ba5aeb-81ec-4213-9481-777cdfc097cc",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.test(\"verify response code should be equal 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"verify respose contain fields email_available,email_valid,success\", function () {",
+											"    pm.expect(jsonData).to.have.property(\"email_available\");",
+											"    pm.expect(jsonData).to.have.property(\"email_valid\");",
+											"    pm.expect(jsonData).to.have.property(\"success\");",
+											"});",
+											"",
+											"pm.test( \"field email_available shuld be False\", function () {",
+											"    pm.expect(jsonData.email_available).to.eql(false);",
+											"});",
+											"",
+											"pm.test( \"field email_valid shuld be True\", function () {",
+											"    pm.expect(jsonData.email_valid).to.eql(true);",
+											"});",
+											"",
+											"pm.test(\"field success shuld be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api-beta.gross-meister.com/check-email/{{registered_user_login}}",
+									"protocol": "https",
+									"host": [
+										"api-beta",
+										"gross-meister",
+										"com"
+									],
+									"path": [
+										"check-email",
+										"{{registered_user_login}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "chek-email/{email} negative test",
+					"item": [
+						{
+							"name": "check-email/{email}",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d1ba5aeb-81ec-4213-9481-777cdfc097cc",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.test(\"verify response code should be equal 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"verify respose contain fields email_available,email_valid,success\", function () {",
+											"    pm.expect(jsonData).to.have.property(\"email_available\");",
+											"    pm.expect(jsonData).to.have.property(\"email_valid\");",
+											"    pm.expect(jsonData).to.have.property(\"success\");",
+											"});",
+											"",
+											"pm.test( \"field email_available shuld be True\", function () {",
+											"    pm.expect(jsonData.email_available).to.eql(true);",
+											"});",
+											"",
+											"pm.test( \"field email_valid shuld be False\", function () {",
+											"    pm.expect(jsonData.email_valid).to.eql(false);",
+											"});",
+											"",
+											"pm.test(\"field success shuld be True\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api-beta.gross-meister.com/check-email/{NOT_REGISTERED_USER_LOGIN}",
+									"protocol": "https",
+									"host": [
+										"api-beta",
+										"gross-meister",
+										"com"
+									],
+									"path": [
+										"check-email",
+										"{NOT_REGISTERED_USER_LOGIN}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "check-username/{username}",
+			"item": [
+				{
+					"name": "Check-username positive test",
+					"item": [
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9cb037b6-e831-4c44-90c7-02ac4711ebfb",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.test(\"verify response code should be equal 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"verify respose contain fields username,role,token, success\", function () {",
+											"    pm.expect(jsonData).to.have.property(\"username\");",
+											"    pm.expect(jsonData).to.have.property(\"role\");",
+											"    pm.expect(jsonData).to.have.property(\"token\");",
+											"    pm.expect(jsonData).to.have.property(\"success\");",
+											"});",
+											"",
+											"pm.test( \"field role shuld be Client\", function () {",
+											"    pm.expect(jsonData.role).to.eql(\"Client\");",
+											"});",
+											"",
+											"pm.test(\"field success shuld be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"});",
+											"",
+											"pm.collectionVariables.set(\"token\", jsonData.token) "
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "2fec9c45-ad4e-44a4-96ec-73f9fd3683ce",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"login\": \"{{registered_user_login}}\",\r\n  \"password\": \"{{registered_user_password}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/login?",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "profile",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "87a9675c-00e8-45cf-be8e-c4b46c7f05df",
+										"exec": [
+											" var jsonData = pm.response.json();",
+											" ",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"field success shuld be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"});",
+											"",
+											"pm.test(\"field message shuld be Profile successfully updated\", function () {",
+											"    pm.expect(jsonData.message).to.eql(\"Profile successfully updated\");",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"first_name\": \"{{first_name}}\",\r\n  \"last_name\": \"{{last_name}}\",\r\n  \"username\": \"{{username}}\",\r\n  \"country\": \"{{country}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/profile",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"profile"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "check-username/{username} Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "58f18366-ee0e-46e1-a72f-9f0cedfa914e",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.test(\"verify response code should be equal 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test( \"field username_available shuld be true\", function () {",
+											"    pm.expect(jsonData.username_available).to.eql(false);",
+											"});",
+											"",
+											"pm.test( \"field username_valid be false\", function () {",
+											"    pm.expect(jsonData.username_valid).to.eql(true);",
+											"});",
+											"",
+											"pm.test(\"field success shuld be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api-beta.gross-meister.com/check-username/{{username}}",
+									"protocol": "https",
+									"host": [
+										"api-beta",
+										"gross-meister",
+										"com"
+									],
+									"path": [
+										"check-username",
+										"{{username}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Check-username negative test",
+					"item": [
+						{
+							"name": "check-username/{username}",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "308b2fb4-f632-40ba-b17b-89cf536b4761",
+										"exec": [
+											"",
+											"pm.test(\"verify response code should be equal 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"pm.test(\"Body is EMPTY\", function () {",
+											"    pm.response.to.have.body(\"\");",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api-beta.gross-meister.com/check-username/",
+									"protocol": "https",
+									"host": [
+										"api-beta",
+										"gross-meister",
+										"com"
+									],
+									"path": [
+										"check-username",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "start-trial",
+			"item": [
+				{
+					"name": "start-trial_positive/negative test",
+					"item": [
+						{
+							"name": "signup",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "3a2827dc-f808-4d44-8251-cab9454e4215",
+										"exec": [
+											"var random_namber =  Math.floor(Math.random() * 9999999999);\r",
+											"pm.collectionVariables.set(\"random_number\", random_namber)\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "5ebae125-4020-48d5-83cc-7a09f42142c2",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"pm.test(\"email_confirmation_required should be true and succes == true\", function(){\r",
+											"       var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.email_confirmation_required).to.eql(true);\r",
+											"    pm.expect(jsonData.success).to.eql(true);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Response time is more than 2000ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\",\r\n  \"password\": \"{{random_number}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/signup",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"signup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "login Admin",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e1b90300-60bc-40a4-b560-ee941c888804",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "806ae704-cc54-4140-9528-437d93bb1d1c",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"pm.test(\"verify response code should be equal 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"verify respose contain fields username,role,token, success\", function () {",
+											"    pm.expect(jsonData).to.have.property(\"username\");",
+											"    pm.expect(jsonData).to.have.property(\"role\");",
+											"    pm.expect(jsonData).to.have.property(\"token\");",
+											"    pm.expect(jsonData).to.have.property(\"success\");",
+											"});",
+											"   // pm.test( \"field username shuld be \"+pm.environment.get(\"stable_username\"), function () {",
+											"  //     pm.expect(jsonData.username).to.eql(pm.environment.get(\"stable_username\"));",
+											"// });                                                                                                           PROFILE",
+											"",
+											"pm.test( \"field role shuld be Admin\", function () {",
+											"    pm.expect(jsonData.role).to.eql(\"Admin\");",
+											"});",
+											"",
+											"pm.test(\"field success shuld be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"});",
+											"",
+											"pm.collectionVariables.set(\"token\", jsonData.token) "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"login\": \"{{admin_login}}\",\r\n  \"password\": \"{{admin_password}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Admin find user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e1b90300-60bc-40a4-b560-ee941c888804",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "806ae704-cc54-4140-9528-437d93bb1d1c",
+										"exec": [
+											"var UserID = pm.response.json().user.id;",
+											"pm.environment.set(\"user_id\", UserID);",
+											"",
+											"",
+											"// pm.test(\"verify response code should be equal 200\", function () {",
+											"//     pm.response.to.have.status(200);",
+											"// });",
+											"",
+											"",
+											"// pm.test(\"verify respose contain fields username,role,token, success\", function () {",
+											"//     pm.expect(jsonData).to.have.property(\"username\");",
+											"//     pm.expect(jsonData).to.have.property(\"role\");",
+											"//     pm.expect(jsonData).to.have.property(\"token\");",
+											"//     pm.expect(jsonData).to.have.property(\"success\");",
+											"// });",
+											"//   // pm.test( \"field username shuld be \"+pm.environment.get(\"stable_username\"), function () {",
+											"//   //     pm.expect(jsonData.username).to.eql(pm.environment.get(\"stable_username\"));",
+											"// // });                                                                                                           PROFILE",
+											"",
+											"// pm.test( \"field role shuld be Client\", function () {",
+											"//     pm.expect(jsonData.role).to.eql(\"Client\");",
+											"// });",
+											"",
+											"// pm.test(\"field success shuld be true\", function () {",
+											"//     pm.expect(jsonData.success).to.eql(true);",
+											"// });",
+											"",
+											"// pm.environment.set(\"token\", jsonData.token) "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/users/im-lucky/{{registered_email_username}}+{{random_number}}{{registered_email_domain}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"admin",
+										"users",
+										"im-lucky",
+										"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "confirm email by Admin",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user\": {\n        \"id\": \"{{user_id}}\",\n        \"username\": null,\n        \"email\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\",\n        \"role\": 100,\n        \"category\": 100,\n        \"active\": true,\n        \"email_confirmed\": true\n    }\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/user",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"admin",
+										"user"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "login User",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "e1b90300-60bc-40a4-b560-ee941c888804",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "806ae704-cc54-4140-9528-437d93bb1d1c",
+										"exec": [
+											"      ",
+											"      ",
+											"      var jsonData = pm.response.json();",
+											"pm.test(\"verify response code should be equal 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"verify respose contain fields username,role,token, success\", function () {",
+											"    pm.expect(jsonData).to.have.property(\"username\");",
+											"    pm.expect(jsonData).to.have.property(\"role\");",
+											"    pm.expect(jsonData).to.have.property(\"token\");",
+											"    pm.expect(jsonData).to.have.property(\"success\");",
+											"});",
+											"   // pm.test( \"field username shuld be \"+pm.environment.get(\"stable_username\"), function () {",
+											"  //     pm.expect(jsonData.username).to.eql(pm.environment.get(\"stable_username\"));",
+											"// });                                                                                                           PROFILE",
+											"",
+											"pm.test( \"field role shuld be Client\", function () {",
+											"    pm.expect(jsonData.role).to.eql(\"Client\");",
+											"});",
+											"",
+											"pm.test(\"field success shuld be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"});",
+											"",
+											"pm.collectionVariables.set(\"token\", jsonData.token) "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"login\": \"{{registered_email_username}}+{{random_number}}{{registered_email_domain}}\",\r\n  \"password\": \"{{random_number}}\"\r\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/login?",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "start-trial_positive",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "8028373c-c3c8-4af6-ae8f-fca04f0de07b",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											" var jsonData = pm.response.json();",
+											" ",
+											" pm.test( \"field success should be true\", function () {",
+											"    pm.expect(jsonData.success).to.eql(true);",
+											"}); ",
+											"",
+											"pm.test( \"field message should be Trial evaluation successfully started \", function () {",
+											"    pm.expect(jsonData.message).to.eql(\"Trial evaluation successfully started\");",
+											"}); ",
+											"",
+											" "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "https://api-beta.gross-meister.com/start-trial",
+									"protocol": "https",
+									"host": [
+										"api-beta",
+										"gross-meister",
+										"com"
+									],
+									"path": [
+										"start-trial"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "start-trial_negative",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "7e7b711d-9c7e-48af-8c2f-c240b72f35f9",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											" var jsonData = pm.response.json();",
+											" ",
+											" pm.test( \"field success should be false\", function () {",
+											"    pm.expect(jsonData.success).to.eql(false);",
+											"}); ",
+											"",
+											"pm.test( \"field message should be Trial evaluation is not available for this user \", function () {",
+											"    pm.expect(jsonData.message).to.eql(\"Trial evaluation is not available for this user\");",
+											"}); ",
+											"",
+											" pm.test( \"field error_code should be GMSRV-0010\", function () {",
+											"    pm.expect(jsonData.error_code).to.eql(\"GMSRV-0010\");",
+											"}); "
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "https://api-beta.gross-meister.com/start-trial",
+									"protocol": "https",
+									"host": [
+										"api-beta",
+										"gross-meister",
+										"com"
+									],
+									"path": [
+										"start-trial"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "976ab660-7d00-4509-92a9-1fef0842d93b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "d282ca7d-934c-44c2-a177-b7465bd154fa",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "2d083e29-9c7a-4259-a017-d8cbb846245a",
+			"key": "registered_email_username",
+			"value": "permurakin",
+			"type": "string"
+		},
+		{
+			"id": "54588f7e-fe68-4cb3-8b88-ffadc5e564e8",
+			"key": "registered_email_domain",
+			"value": "@gmail.com",
+			"type": "string"
+		},
+		{
+			"id": "b276288e-fab4-4b54-857e-2b7073c745a3",
+			"key": "registered_email_password",
+			"value": "grossmeister1",
+			"type": "string"
+		},
+		{
+			"id": "4a44467e-3406-4ba0-95bb-0db233a8fe9b",
+			"key": "random_number",
+			"value": 7620373922,
+			"type": "number"
+		},
+		{
+			"id": "1e7b33d2-e1ea-4aaf-8253-46b400a4dcbc",
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjE4NmNhOTAyLTgyNmItNGY3Zi04MjU5LTNmYTBmZjc5MjcyNSIsInJvbGUiOiJDbGllbnQiLCJuYmYiOjE1NzcxMzAyOTUsImV4cCI6MTU3NzIxNjY5NSwiaWF0IjoxNTc3MTMwMjk1fQ.lfaOiC-LUOk7zRAmH1TE2sEdprnph30LihvsnrM0w68",
+			"type": "string"
+		},
+		{
+			"id": "537a6e54-272c-4152-a69c-dcf3f5fc664c",
+			"key": "first_name",
+			"value": "Petro",
+			"type": "string"
+		},
+		{
+			"id": "e12fd957-a705-48b4-8d5b-f4c635d907ae",
+			"key": "last_name",
+			"value": "Yermurakin",
+			"type": "string"
+		},
+		{
+			"id": "8fb10e26-82b3-4e92-aad5-5fe4087fa3a0",
+			"key": "username",
+			"value": "permurakin",
+			"type": "string"
+		},
+		{
+			"id": "53ec7028-06e5-4a9d-8e5d-c6f5dbf4f654",
+			"key": "country",
+			"value": "Ukraine",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
